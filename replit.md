@@ -8,8 +8,11 @@ A web-based voice training simulation app for orthopedic sales representatives. 
 - Voice-based conversation with AI surgeon using browser speech recognition
 - Real-time transcript display during conversation
 - AI-generated scoring (0-100) with sectional breakdowns
-- Text-to-speech for AI responses
+- Text-to-speech for AI responses (20% faster playback for natural conversation)
 - No authentication required - users just enter their name to start
+- Top 10 leaderboard on results page with celebration sound for top performers
+- Hidden admin dashboard at /admin for tracking all simulations (CSV export available)
+- Email reports sent to semami@tjoinc.com after each completed simulation
 
 ## User Preferences
 
