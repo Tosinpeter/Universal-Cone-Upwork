@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { type Transcript, type SimulationFeedback } from "@shared/schema";
 import * as fs from 'fs';
 import * as path from 'path';
@@ -7,9 +8,16 @@ import * as path from 'path';
 const TRUTH_SET_PATH = path.join(process.cwd(), "attached_assets", "universal_cones_truth_set_1768446677241.json");
 const truthSet = JSON.parse(fs.readFileSync(TRUTH_SET_PATH, 'utf-8'));
 
+// OpenAI client - used for TTS only
 const openai = new OpenAI({ 
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
+
+// Anthropic client - used for conversation and scoring
+// Uses claude-sonnet-4-20250514 as the latest model
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const SYSTEM_PROMPT = `
@@ -40,24 +48,35 @@ Do not admit you are an AI. Stick to the persona.
 `;
 
 export async function generateAiResponse(history: Transcript[]): Promise<string> {
-  const messages = history.map(t => ({
+  // Claude requires conversations to start with a user message
+  // Our history starts with an assistant greeting, so we need to handle this
+  let messages = history.map(t => ({
     role: t.role as "user" | "assistant",
     content: t.content
   }));
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+  // If the first message is from the assistant, we need to prepend a user message
+  // to satisfy Claude's requirement
+  if (messages.length > 0 && messages[0].role === "assistant") {
+    messages = [
+      { role: "user" as const, content: "[Sales rep enters the office]" },
       ...messages
-    ],
-    temperature: 0.7,
+    ];
+  }
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1024,
+    system: SYSTEM_PROMPT,
+    messages: messages,
   });
 
-  return response.choices[0].message.content || "I didn't catch that. Could you repeat?";
+  const textContent = response.content.find(block => block.type === 'text');
+  return textContent?.text || "I didn't catch that. Could you repeat?";
 }
 
 export async function generateTts(text: string): Promise<Buffer> {
+  // TTS still uses OpenAI as Claude doesn't have TTS capability
   const mp3 = await openai.audio.speech.create({
     model: "tts-1",
     voice: "onyx", // Professional, authoritative male voice
@@ -97,16 +116,17 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
     - incorrect_or_risky_claims: string[] (List any false claims or compliance violations)
   `;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4096,
+    system: "You are an expert sales coach for orthopedic devices. Evaluate strictly against the provided Truth Set. Return ONLY valid JSON, no other text.",
     messages: [
-      { role: "system", content: "You are an expert sales coach for orthopedic devices. Evaluate strictly against the provided Truth Set. Return ONLY JSON." },
       { role: "user", content: prompt }
     ],
-    response_format: { type: "json_object" }
   });
 
-  const result = JSON.parse(response.choices[0].message.content || "{}");
+  const textContent = response.content.find(block => block.type === 'text');
+  const result = JSON.parse(textContent?.text || "{}");
   
   const feedback: SimulationFeedback = {
     totalScore: result.totalScore || 0,
