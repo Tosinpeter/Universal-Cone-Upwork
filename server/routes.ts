@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { generateAiResponse, generateScore } from "./openai";
+import { sendSimulationReport } from "./resend";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -83,6 +84,15 @@ export async function registerRoutes(
     const { score, feedback } = await generateScore(transcripts);
     
     const updatedSim = await storage.updateSimulationScore(id, score, feedback);
+    
+    // Send email report asynchronously
+    sendSimulationReport('semami@tjoinc.com', {
+      name: updatedSim.userName,
+      score: updatedSim.score || 0,
+      feedback: updatedSim.feedback,
+      transcript: transcripts
+    }).catch(err => console.error('Background email report failed:', err));
+
     res.json(updatedSim);
   });
 
