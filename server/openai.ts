@@ -15,7 +15,7 @@ const openai = new OpenAI({
 });
 
 // Anthropic client - used for conversation and scoring
-// Uses claude-sonnet-4-20250514 as the latest model
+// Uses claude-3-5-haiku for faster responses
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -65,7 +65,7 @@ export async function generateAiResponse(history: Transcript[]): Promise<string>
   }
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-3-5-haiku-20241022",
     max_tokens: 1024,
     system: SYSTEM_PROMPT,
     messages: messages,
@@ -123,7 +123,7 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
   `;
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-3-5-haiku-20241022",
     max_tokens: 4096,
     system: "You are an expert sales coach for orthopedic devices. Evaluate strictly against the provided Truth Set. Return ONLY valid JSON, no other text.",
     messages: [

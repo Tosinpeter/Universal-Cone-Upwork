@@ -73,8 +73,8 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### AI Services
-- **OpenAI API:** Used via Replit AI Integrations (environment variables: `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`)
-- **Model:** GPT-4o for conversation and scoring
+- **Anthropic API:** Claude 3.5 Haiku for Dr. Hayes conversation and scoring (fast responses)
+- **OpenAI API:** Used for text-to-speech (TTS-1 model with Onyx voice)
 
 ### Database
 - **PostgreSQL:** Primary database, connection via `DATABASE_URL` environment variable
