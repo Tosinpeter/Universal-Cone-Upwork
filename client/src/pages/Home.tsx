@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useCreateSimulation } from "@/hooks/use-simulations";
 import { motion } from "framer-motion";
-import { ArrowRight, Activity, Award } from "lucide-react";
+import { ArrowRight, Activity, Award, BarChart3 } from "lucide-react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import tjoLogo from "@assets/TJO_Logo_1768447571999.png";
@@ -27,6 +28,12 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <img src={tjoLogo} alt="TJO Logo" className="h-12 w-auto object-contain" />
         </div>
+        <Link href="/admin">
+          <Button variant="outline" size="sm" data-testid="button-admin-dashboard">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+        </Link>
       </header>
 
       {/* Hero Content */}

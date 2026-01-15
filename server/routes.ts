@@ -29,6 +29,24 @@ export async function registerRoutes(
     }
   });
   
+  // Get All Simulations (Admin Dashboard)
+  app.get("/api/simulations", async (req, res) => {
+    const allSimulations = await storage.getAllSimulations();
+    res.json(allSimulations);
+  });
+
+  // Get All Simulations with Transcripts (for export)
+  app.get("/api/simulations/export", async (req, res) => {
+    const allSimulations = await storage.getAllSimulations();
+    const exportData = await Promise.all(
+      allSimulations.map(async (sim) => {
+        const transcripts = await storage.getTranscripts(sim.id);
+        return { ...sim, transcripts };
+      })
+    );
+    res.json(exportData);
+  });
+
   // Create Simulation
   app.post(api.simulations.create.path, async (req, res) => {
     try {

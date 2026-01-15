@@ -8,11 +8,12 @@ import {
   type Transcript,
   type SimulationFeedback
 } from "@shared/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 
 export interface IStorage {
   createSimulation(simulation: InsertSimulation): Promise<Simulation>;
   getSimulation(id: number): Promise<Simulation | undefined>;
+  getAllSimulations(): Promise<Simulation[]>;
   addTranscript(transcript: InsertTranscript): Promise<Transcript>;
   getTranscripts(simulationId: number): Promise<Transcript[]>;
   updateSimulationScore(id: number, score: number, feedback: SimulationFeedback): Promise<Simulation>;
@@ -27,6 +28,10 @@ export class DatabaseStorage implements IStorage {
   async getSimulation(id: number): Promise<Simulation | undefined> {
     const [sim] = await db.select().from(simulations).where(eq(simulations.id, id));
     return sim;
+  }
+
+  async getAllSimulations(): Promise<Simulation[]> {
+    return await db.select().from(simulations).orderBy(desc(simulations.createdAt));
   }
 
   async addTranscript(transcript: InsertTranscript): Promise<Transcript> {
