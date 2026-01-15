@@ -8,13 +8,14 @@ import {
   type Transcript,
   type SimulationFeedback
 } from "@shared/schema";
-import { eq, asc, desc } from "drizzle-orm";
+import { eq, asc, desc, isNotNull } from "drizzle-orm";
 
 export interface IStorage {
   createSimulation(simulation: InsertSimulation): Promise<Simulation>;
   getSimulation(id: number): Promise<Simulation | undefined>;
   getAllSimulations(): Promise<Simulation[]>;
   getAllSimulationsWithTranscripts(): Promise<(Simulation & { transcripts: Transcript[] })[]>;
+  getTop10Simulations(): Promise<Simulation[]>;
   addTranscript(transcript: InsertTranscript): Promise<Transcript>;
   getTranscripts(simulationId: number): Promise<Transcript[]>;
   updateSimulationScore(id: number, score: number, feedback: SimulationFeedback): Promise<Simulation>;
@@ -52,6 +53,15 @@ export class DatabaseStorage implements IStorage {
       ...sim,
       transcripts: transcriptsBySimId.get(sim.id) || []
     }));
+  }
+
+  async getTop10Simulations(): Promise<Simulation[]> {
+    // Get top 10 completed simulations with highest scores
+    return await db.select()
+      .from(simulations)
+      .where(isNotNull(simulations.score))
+      .orderBy(desc(simulations.score))
+      .limit(10);
   }
 
   async addTranscript(transcript: InsertTranscript): Promise<Transcript> {

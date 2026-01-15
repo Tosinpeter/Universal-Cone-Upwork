@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useCreateSimulation } from "@/hooks/use-simulations";
 import { motion } from "framer-motion";
-import { ArrowRight, Activity, Award, BarChart3 } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, Activity, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import tjoLogo from "@assets/TJO_Logo_1768447571999.png";
@@ -24,16 +23,10 @@ export default function Home() {
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
 
       {/* Navbar */}
-      <header className="relative z-10 w-full px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
+      <header className="relative z-10 w-full px-6 py-6 flex items-center justify-center max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <img src={tjoLogo} alt="TJO Logo" className="h-12 w-auto object-contain" />
         </div>
-        <Link href="/admin">
-          <Button variant="outline" size="sm" data-testid="button-admin-dashboard">
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Dashboard
-          </Button>
-        </Link>
       </header>
 
       {/* Hero Content */}

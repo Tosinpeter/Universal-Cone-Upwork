@@ -41,6 +41,12 @@ export async function registerRoutes(
     res.json(exportData);
   });
 
+  // Get Top 10 Leaderboard (completed simulations with scores, sorted by score desc)
+  app.get("/api/simulations/top10", async (req, res) => {
+    const top10 = await storage.getTop10Simulations();
+    res.json(top10);
+  });
+
   // Create Simulation
   app.post(api.simulations.create.path, async (req, res) => {
     try {
