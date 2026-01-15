@@ -47,4 +47,5 @@ export interface SimulationFeedback {
   sections: FeedbackSection[];
   strengths: string[];
   improvements: string[];
+  incorrectClaims?: string[];
 }

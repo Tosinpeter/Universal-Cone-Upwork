@@ -1,7 +1,12 @@
 import OpenAI from "openai";
 import { type Transcript, type SimulationFeedback } from "@shared/schema";
+import * as fs from 'fs';
+import * as path from 'path';
 
-// the user will provide the api key via the Replit integration
+// Load the truth set document
+const TRUTH_SET_PATH = path.join(process.cwd(), "attached_assets", "universal_cones_truth_set_1768446677241.json");
+const truthSet = JSON.parse(fs.readFileSync(TRUTH_SET_PATH, 'utf-8'));
+
 const openai = new OpenAI({ 
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
@@ -14,21 +19,24 @@ You prefer ream-only techniques and dislike broaching or hand-burring.
 You are open to Zimmer TM cones but currently use Stryker.
 You are skeptical but willing to listen.
 
+PRODUCT KNOWLEDGE (Total Joint Orthopedics Universal Cones):
+${JSON.stringify(truthSet.product, null, 2)}
+COMPATIBILITY & ORIENTATION:
+${JSON.stringify(truthSet.compatibility, null, 2)}
+WORKFLOW:
+${JSON.stringify(truthSet.instrumentation_and_workflow, null, 2)}
+
 Your goal is to challenge the sales rep (the user) on:
-- Why Zimmer cones are better than Stryker.
+- Why TJO Universal cones are better than Stryker.
 - Technique benefits (reaming vs other methods).
-- Workflow simplicity.
+- Workflow simplicity (TJO has 1 tray for cones, 3 for full system vs Stryker's 10-12).
+- Taper angles (TJO has 12°, 18°, 24° for bone conservation).
 
 Be professional, slightly busy/impatient, but fair.
 Ask 1 follow-up question at a time.
-Keep responses concise (under 50 words usually) to allow for back-and-forth.
+Keep responses concise (under 50 words usually).
 
-Use the following questions as a pool to rotate through, but feel free to ask relevant follow-ups based on the conversation:
-1. "Why should I switch to Zimmer when Stryker has a proven track record?"
-2. "I prefer reaming. Does your system require broaching?"
-3. "How does your workflow compare to what I'm doing now?"
-4. "Tell me about the fixation. Is it comparable to the cones I use?"
-5. "What about the cost difference?"
+Do not admit you are an AI. Stick to the persona.
 `;
 
 export async function generateAiResponse(history: Transcript[]): Promise<string> {
@@ -56,29 +64,33 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
     Analyze the following sales conversation between a Rep and Dr. Hayes (Surgeon).
     
     Surgeon Profile: Uses Stryker cones, likes reaming, dislikes broaching.
-    Goal: Rep needs to position Zimmer cones effectively against Stryker.
+    Goal: Rep needs to position TJO Universal Cones effectively against Stryker using the Truth Set provided.
     
+    TRUTH SET DATA:
+    ${JSON.stringify(truthSet, null, 2)}
+
     Transcript:
     ${transcriptText}
     
-    Evaluate based on:
-    1. Introduction (Professionalism, hook)
-    2. Discovery (Asking about volume, preferences, pain points with current cones)
-    3. Objection Handling (Addressing the Stryker comparison, reaming vs broaching)
-    4. Product Positioning (Highlighting Zimmer TM cone benefits)
-    5. Closing (Asking for the business or a trial)
+    Evaluate based on these specific dimensions from the truth set:
+    1. Core Message Accuracy (Universal geometry, ream-only, taper angles, tray count)
+    2. Clinical & Surgical Workflow Accuracy (Indications, ream-only benefit, orientation rules: Tibia M/L, Femur A/P)
+    3. Data & Proof Points (Tray count 1 vs 10-12, $1,350 savings, 44% femoral utilization)
+    4. Competitive Positioning (Contrasting TJO vs Stryker/DePuy/Zimmer accurately)
+    5. Compliance (NO hinge claims, NO arbitrary rotation claims, NO identical depth claims)
 
     Return a JSON object with:
     - totalScore (0-100)
     - sections: [{ name: string, score: number (0-20), feedback: string }]
     - strengths: string[]
     - improvements: string[]
+    - incorrect_or_risky_claims: string[] (List any false claims or compliance violations)
   `;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
-      { role: "system", content: "You are an expert sales coach for orthopedic devices. Return ONLY JSON." },
+      { role: "system", content: "You are an expert sales coach for orthopedic devices. Evaluate strictly against the provided Truth Set. Return ONLY JSON." },
       { role: "user", content: prompt }
     ],
     response_format: { type: "json_object" }
@@ -86,12 +98,12 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
 
   const result = JSON.parse(response.choices[0].message.content || "{}");
   
-  // Ensure structure matches SimulationFeedback interface
   const feedback: SimulationFeedback = {
     totalScore: result.totalScore || 0,
     sections: result.sections || [],
     strengths: result.strengths || [],
-    improvements: result.improvements || []
+    improvements: result.improvements || [],
+    incorrectClaims: result.incorrect_or_risky_claims || []
   };
 
   return { score: feedback.totalScore, feedback };

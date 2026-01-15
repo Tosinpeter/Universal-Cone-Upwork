@@ -1,0 +1,342 @@
+{
+  "dataset_version": "1.0",
+  "dataset_name": "TJO Universal Cone System Canonical Truth Set",
+  "source_file": "Universal Cone Data Summary.docx",
+  "last_generated_utc": "2026-01-15T03:07:03Z",
+  "product": {
+    "company": "Total Joint Orthopedics (TJO)",
+    "system_name": "Universal Cones",
+    "application": [
+      "Revision total knee arthroplasty (TKA) metaphyseal fixation",
+      "Femur and tibia cone augmentation"
+    ],
+    "core_positioning": [
+      "Universal geometry: one cone system for tibia + femur",
+      "Ream-only workflow (no broaching)",
+      "Multiple taper angles (12°, 18°, 24°) to improve femoral fit and conserve bone",
+      "Small footprint instrumentation (1 tray for cones; 3 trays for full revision system)"
+    ]
+  },
+  "specifications": {
+    "material": {
+      "base_material": "Titanium",
+      "surface_treatment": "Ti-Coat®",
+      "coating_description": "Ultra-porous commercially pure titanium coating created by sintering asymmetrical grains",
+      "porosity": {
+        "mean_porosity_percent": 60,
+        "pore_size_microns_range": [
+          100,
+          400
+        ],
+        "purpose": "Facilitate biologic fixation and bony ingrowth"
+      },
+      "internal_surface": "Grit-blasted with machined steps to optimize cement mantle adherence"
+    },
+    "dimensions": {
+      "height_mm_all_sizes": 32.5,
+      "keel_cutout_depth_mm": 23,
+      "keel_cutout_purpose": "Clearance for the keel of the largest (Size 6) Klassic® Tibial Baseplate"
+    }
+  },
+  "sizing_matrix": [
+    {
+      "cone_size": 1,
+      "taper_angle_deg": 12,
+      "defect_diameter_mm": 28,
+      "max_stem_diameter_mm": 16
+    },
+    {
+      "cone_size": 2,
+      "taper_angle_deg": 12,
+      "defect_diameter_mm": 30,
+      "max_stem_diameter_mm": 18
+    },
+    {
+      "cone_size": 3,
+      "taper_angle_deg": 18,
+      "defect_diameter_mm": 33,
+      "max_stem_diameter_mm": 18
+    },
+    {
+      "cone_size": 4,
+      "taper_angle_deg": 18,
+      "defect_diameter_mm": 35,
+      "max_stem_diameter_mm": 20
+    },
+    {
+      "cone_size": 5,
+      "taper_angle_deg": 24,
+      "defect_diameter_mm": 39,
+      "max_stem_diameter_mm": 20
+    },
+    {
+      "cone_size": 6,
+      "taper_angle_deg": 24,
+      "defect_diameter_mm": 41,
+      "max_stem_diameter_mm": 22
+    },
+    {
+      "cone_size": 7,
+      "taper_angle_deg": 24,
+      "defect_diameter_mm": 43,
+      "max_stem_diameter_mm": 24
+    }
+  ],
+  "compatibility": {
+    "universal_geometry": "Designed for use in both the femur and tibia",
+    "orientation_rules": {
+      "tibia": {
+        "keel_cutout_orientation": "Medial/Lateral (M/L)",
+        "note": "Keel cutouts must be oriented M/L for tibial implant clearance"
+      },
+      "femur": {
+        "keel_cutout_orientation": "Anterior/Posterior (A/P)",
+        "note": "Keel cutouts must be oriented A/P (rotated 90° from tibia) for femoral implant clearance"
+      }
+    },
+    "stem_compatibility": {
+      "minimum_cemented_stem_diameter_mm_all_sizes": 16,
+      "max_stem_diameter_mm_by_size": {
+        "1": 16,
+        "2": 18,
+        "3": 18,
+        "4": 20,
+        "5": 20,
+        "6": 22,
+        "7": 24
+      }
+    },
+    "klassic_femur_compatibility": [
+      {
+        "cone_sizes": [
+          1,
+          2,
+          3
+        ],
+        "compatible_femur_sizes": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "cone_sizes": [
+          4
+        ],
+        "compatible_femur_sizes": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "cone_sizes": [
+          5
+        ],
+        "compatible_femur_sizes": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "cone_sizes": [
+          6,
+          7
+        ],
+        "compatible_femur_sizes": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "constraint_note": "Larger cones may not fit inside the box of the smallest femurs"
+      }
+    ],
+    "competitive_cross_compatibility_sales_intel": {
+      "key_point": "Size 2 cone (~18mm ID) can fit over many competitor stem housings to enable isolated cone revisions without changing the primary system",
+      "example_competitors": [
+        "Stryker",
+        "Zimmer Biomet"
+      ]
+    }
+  },
+  "instrumentation_and_workflow": {
+    "system_footprint": {
+      "trays_total_full_revision_system": 3,
+      "trays_for_cones_only": 1,
+      "cone_tray_details": "One 1/2-height tray can be used for both femur and tibia cones and includes trials for both sides",
+      "competitive_context": "Competitors often require 8–12+ trays; some use 15–18 trays with double-decker back tables"
+    },
+    "prep_method": {
+      "technique": "Ream-only",
+      "no_broaching": true,
+      "claimed_benefit": "Reduces fracture risk compared to broaching/burring techniques"
+    },
+    "reaming_options": [
+      {
+        "name": "Over IM Rod",
+        "description": "Standard technique using an intramedullary reamer to set position"
+      },
+      {
+        "name": "Guided Reamer",
+        "description": "Uses a 10mm fixed diameter guide to position the cone independently of the IM canal; allows biasing (M/L/A/P) to cover asymmetric defects or correct alignment without being married to femoral bow"
+      }
+    ],
+    "placement_depth_rules": {
+      "tibia": "Flush with proximal tibial cut (or countersunk)",
+      "femur": "Place 22mm proximal to distal femoral cut to ensure clearance for femoral box and stem adapter"
+    },
+    "techniques": [
+      {
+        "name": "Box-Last Workflow (Dr. Wellman)",
+        "steps": [
+          "Trial stem and rotation without PS box cut first",
+          "Once joint line/rotation are set, ream for the box through the trial",
+          "This helps ensure the box sits on fresh bone"
+        ]
+      },
+      {
+        "name": "Countersinking between sizes",
+        "principle": "If between sizes, ream for a smaller cone and countersink it rather than over-reaming for a larger size"
+      }
+    ]
+  },
+  "indications_and_limitations": {
+    "primary_indications": [
+      "Metaphyseal bone loss (Zone 2 fixation)",
+      "Aseptic loosening requiring revision",
+      "Cases requiring stems and augments"
+    ],
+    "limitations_and_contraindications": [
+      "Not a rotating hinge system; indicated up to PS-Max/Constrained level only",
+      "Not indicated for massive global ligamentous instability or severe recurvatum requiring a hinge",
+      "Requires adequate host bone contact; massive defects may require alternative solutions (e.g., DFR territory); stacked cones have been used off-label"
+    ]
+  },
+  "key_claims_and_benefits": [
+    {
+      "claim": "Bone conservation / femoral fit",
+      "supporting_points": [
+        "12° and 18° tapers preserve anterior femoral cortex versus fixed 24° taper designs that can blow out anterior cortex in smaller femurs"
+      ]
+    },
+    {
+      "claim": "Operational efficiency",
+      "supporting_points": [
+        "1 tray for cones; 3-tray full revision system reduces OR time, sterilization cost, and clutter",
+        "Estimated savings up to $1,350 per case due to reduced sterilization burden; supports ASC efficiency"
+      ]
+    },
+    {
+      "claim": "Higher femoral utilization",
+      "supporting_points": [
+        "TJO internal data: 44% femoral cone usage vs market average ~11% (AJRR), suggesting competitors avoid femoral cones due to fit challenges"
+      ]
+    },
+    {
+      "claim": "Safety vs sleeves",
+      "supporting_points": [
+        "Avoids broaching-related fracture risk",
+        "Avoids modular junction (Ti sleeve + CoCr implant) corrosion/metallosis risk associated with sleeves; registry trends show sleeve usage decreasing"
+      ]
+    }
+  ],
+  "competitive_positioning": [
+    {
+      "competitor": "Stryker Triathlon",
+      "pain_points": [
+        "Fixed 24° taper cones often too wide for femurs; can blow out anterior cortex",
+        "High tray count (10–12)"
+      ],
+      "tjo_solution": [
+        "12° & 18° taper options improve femoral fit and preserve cortex",
+        "3-tray system"
+      ]
+    },
+    {
+      "competitor": "DePuy (Sleeves)",
+      "pain_points": [
+        "Requires broaching (fracture risk)",
+        "Modular junction risks corrosion/metallosis"
+      ],
+      "tjo_solution": [
+        "Ream-only preparation",
+        "Solid porous cone structure eliminates modular corrosion risk"
+      ]
+    },
+    {
+      "competitor": "Zimmer Biomet",
+      "pain_points": [
+        "Historically difficult femoral fit; bulky instrumentation"
+      ],
+      "tjo_solution": [
+        "Streamlined, anatomical femoral fit",
+        "One-tray cones pitch"
+      ]
+    }
+  ],
+  "do_not_claim": [
+    {
+      "rule": "No hinge claim",
+      "do_not_say": "The system includes a hinge implant / rotating hinge",
+      "instead_say": "System supports ~95% of revisions up to PS-Max/Constrained; not indicated when a hinge is required"
+    },
+    {
+      "rule": "No arbitrary cone rotation",
+      "do_not_say": "You can rotate the cone in any direction",
+      "instead_say": "Cone orientation must follow clearance rules: tibia M/L; femur A/P (90° rotation from tibia)"
+    },
+    {
+      "rule": "No identical depth claim",
+      "do_not_say": "Reaming depth is the same for femur and tibia",
+      "instead_say": "Femur placement is 22mm proximal to distal femoral cut; tibia is flush (or countersunk)"
+    }
+  ],
+  "assessment_schema_suggestions": {
+    "intent": "Optional rubric fields you can use in Replit/OpenAI scoring (edit as desired).",
+    "rubric_dimensions": [
+      {
+        "id": "core_message",
+        "label": "Core message accuracy",
+        "description": "Did the rep correctly explain what Universal Cones are and the top 2–3 differentiators?"
+      },
+      {
+        "id": "clinical_fit",
+        "label": "Clinical & surgical workflow accuracy",
+        "description": "Did the rep correctly describe indications, ream-only workflow, guided reamer, and depth/orientation rules?"
+      },
+      {
+        "id": "data_claims",
+        "label": "Data & proof points",
+        "description": "Did the rep use key proof points (tray count, $ savings, femoral utilization) without overstating?"
+      },
+      {
+        "id": "competitive_positioning",
+        "label": "Competitive positioning",
+        "description": "Did the rep contrast TJO vs competitors accurately and fairly?"
+      },
+      {
+        "id": "compliance",
+        "label": "Do-not-claim compliance",
+        "description": "Did the rep avoid prohibited claims (hinge, arbitrary rotation, identical depth)?"
+      }
+    ],
+    "recommended_outputs": [
+      "overall_score_0_100",
+      "strengths_bullets",
+      "gaps_bullets",
+      "coaching_tips_bullets",
+      "incorrect_or_risky_claims"
+    ]
+  }
+}

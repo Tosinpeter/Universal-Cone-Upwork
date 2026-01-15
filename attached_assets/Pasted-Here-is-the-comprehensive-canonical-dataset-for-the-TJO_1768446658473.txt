@@ -1,0 +1,109 @@
+Here is the comprehensive canonical dataset for the TJO Universal Cone System, organized as a structured document for your review.
+
+***
+
+# **TJO Universal Cone System: Canonical Data Set**
+
+## **1. Product Specifications & Material Science**
+
+*   **Material Composition:** Manufactured from Titanium with **Ti-Coat®** surface treatment.
+    *   **Coating:** Ultra-porous commercially pure titanium coating created by sintering asymmetrical grains,.
+    *   **Porosity:** Mean porosity of **60%** with a pore size of 100–400µ to facilitate biologic fixation and bony ingrowth,.
+    *   **Internal Surface:** Grit-blasted with machined steps to optimize cement mantle adherence.
+*   **Dimensions:**
+    *   **Height:** All sizes (1–7) have a uniform height of **32.5mm**,.
+    *   **Keel Cutout:** Features a **23mm deep** cutout to ensure clearance for the keel of the largest (Size 6) Klassic® Tibial Baseplate,.
+*   **Sizing Matrix:**
+
+| Cone Size | Taper Angle | Defect Diameter | Max Stem Diameter |
+| :--- | :--- | :--- | :--- |
+| **Size 1** | **12°** | Ø 28mm | Ø 16mm |
+| **Size 2** | **12°** | Ø 30mm | Ø 18mm |
+| **Size 3** | **18°** | Ø 33mm | Ø 18mm |
+| **Size 4** | **18°** | Ø 35mm | Ø 20mm |
+| **Size 5** | **24°** | Ø 39mm | Ø 20mm |
+| **Size 6** | **24°** | Ø 41mm | Ø 22mm |
+| **Size 7** | **24°** | Ø 43mm | Ø 24mm |
+*Sources:,,,*
+
+---
+
+## **2. Compatibility & Anatomical Application**
+
+*   **Universal Geometry:** Designed for use in **both the Femur and Tibia**.
+    *   **Tibial Orientation:** Keel cutouts must be oriented **Medial/Lateral (M/L)**,.
+    *   **Femoral Orientation:** Keel cutouts must be oriented **Anterior/Posterior (A/P)** (rotated 90° from tibia),.
+*   **Stem Compatibility:** All seven sizes accommodate at least a **16mm cemented stem**,. Larger sizes accommodate up to 24mm stems.
+*   **Femoral Component Compatibility:**
+    *   **Size 1-3 Cones:** Compatible with all Klassic® Femur sizes (1-7).
+    *   **Size 4 Cone:** Compatible with Femur sizes 2-7.
+    *   **Size 5-7 Cones:** Compatible with Femur sizes 3-7 (Size 5) and 4-7 (Sizes 6-7).
+    *   *Constraint:* Larger cones may not fit inside the box of the smallest femurs,.
+*   **Competitive Cross-Compatibility (Sales Intel):**
+    *   The **Size 2 Cone** (approx. 18mm ID) acts as a "problem solver" that can physically fit over many competitor stem housings (e.g., Stryker, Zimmer), allowing for use in isolated cone revisions without changing the primary system,,.
+
+---
+
+## **3. Instrumentation & Surgical Workflow**
+
+*   **System Footprint:**
+    *   **3 Trays Total:** The entire Klassic® Revision System (Cones, Stems, Augments, Instruments) fits into three trays. This compares to 8–12+ trays for competitors,,.
+*   **Preparation Method:** **Ream-Only**. No broaching is required, reducing fracture risk,, .
+*   **Reaming Options:**
+    1.  **Over IM Rod:** Standard technique using the intramedullary reamer to set position,.
+    2.  **Guided Reamer:** Uses a **10mm fixed diameter guide** to position the cone **independently** of the IM canal. Allows biasing (Medial/Lateral/Anterior/Posterior) to cover asymmetric defects or correct alignment without being "married" to the femoral bow,,.
+*   **Placement Depth:**
+    *   **Tibia:** Flush with the proximal tibial cut (or countersunk).
+    *   **Femur:** **22mm proximal** to the distal femoral cut to ensure clearance for the femoral box and stem adapter,.
+*   **Specific Surgical Techniques:**
+    *   **"Box-Last" Workflow (Dr. Wellman):** Trial the stem and rotation *without* the PS box cut first. Once joint line/rotation are set, ream for the box through the trial to ensure the box sits on fresh bone ,.
+    *   **Countersinking:** If between sizes, surgeons may ream for a smaller cone and countersink it rather than over-reaming for a larger size,.
+
+---
+
+## **4. Indications & Limitations**
+
+*   **Primary Indications:**
+    *   Metaphyseal bone loss (Zone 2 fixation),.
+    *   Aseptic loosening requiring revision.
+    *   Cases requiring stems and augments.
+*   **Clinical Limitations (Contraindications):**
+    *   **Not a Hinge:** The system handles ~95% of revisions (CR, PS, PS-Max/Constrained) but does **not** include a rotating hinge. It is not indicated for massive global ligamentous instability or severe recurvatum requiring a hinge,.
+    *   **Bone Contact:** Requires adequate host bone contact; if the defect is massive (Distal Femoral Replacement territory), stacked cones or alternative solutions may be required (though off-label stacking has been done),.
+
+---
+
+## **5. Key Claims & Benefits**
+
+*   **Bone Conservation (The "Femoral Fit"):**
+    *   **Claim:** TJO 12° and 18° tapers preserve the anterior femoral cortex.
+    *   **Evidence:** Competitors (like Stryker) typically use a fixed 24° taper, which often requires blowing out the anterior cortex in smaller femurs. TJO’s narrower options fit the anatomy better,,.
+*   **Operational Efficiency:**
+    *   **Claim:** Reduces OR time, sterilization costs, and back-table clutter.
+    *   **Evidence:** 3-tray system vs. competitor "double-decker" back tables. Estimated savings of up to **$1,350 per case** due to reduced sterilization burden,. Ideal for ASCs.
+*   **Clinical Data:**
+    *   **Claim:** Higher femoral utilization due to better fit.
+    *   **Evidence:** TJO data shows **44% femoral cone usage** vs. market average of ~11% (AJRR data), suggesting competitors avoid femoral cones due to poor fit,.
+*   **Safety (vs. Sleeves):**
+    *   **Claim:** Avoids fracture and corrosion risks associated with sleeves.
+    *   **Evidence:** Registry data shows a downward trend in sleeve usage. Sleeves require aggressive broaching (fracture risk) and introduce a modular junction (Titanium sleeve + CoCr implant) susceptible to **corrosion/metallosis**, .
+
+---
+
+## **6. Competitive Positioning**
+
+| Competitor | Pain Point / Weakness | TJO Solution |
+| :--- | :--- | :--- |
+| **Stryker Triathlon** | Fixed **24° taper** cones often too wide for femurs; "Blows out" anterior cortex. High tray count (10-12). | **12° & 18° Tapers** preserve anterior cortex. **3-Tray** system. |
+| **DePuy / Sleeves** | Requires **broaching** (fracture risk). Modular junction risks **corrosion/metallosis**. | **Ream-only** prep is safer/faster. **Solid porous structure** eliminates modular corrosion risk. |
+| **Zimmer Biomet** | Difficult to fit in the femur; historically bulky instrumentation. | Streamlined, anatomical femoral fit; "One-tray" pitch for cones. |
+
+*Sources:,,,*
+
+---
+
+## **7. What NOT to Claim**
+
+*   **Do NOT Claim:** That the system includes a Hinge implant. (It goes up to PS-Max constraint only).
+*   **Do NOT Claim:** That you can rotate the cone any direction. (Must follow A/P for femur and M/L for tibia for implant clearance),.
+*   **Do NOT Claim:** That reaming depth is identical for femur and tibia. (Femur is placed 22mm proximal/deeper to clear the box),.

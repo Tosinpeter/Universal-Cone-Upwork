@@ -17,7 +17,7 @@ export async function registerRoutes(
       const simulation = await storage.createSimulation(input);
       
       // Initial greeting from AI
-      const greeting = "Hello. I'm Dr. Hayes. I understand you wanted to talk about some of the new revision options. I'm pretty busy, so what have you got?";
+      const greeting = "Hello. I'm Dr. Hayes. I understand you're here to talk about the TJO Universal Cone System. I'm currently using Stryker and I'm pretty happy with my results, but I've got a few minutes. What's so special about your system?";
       await storage.addTranscript({
         simulationId: simulation.id,
         role: 'assistant',
