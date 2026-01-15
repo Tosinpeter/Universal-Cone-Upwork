@@ -76,8 +76,13 @@ export async function generateAiResponse(history: Transcript[]): Promise<string>
 }
 
 export async function generateTts(text: string): Promise<Buffer> {
-  // TTS still uses OpenAI as Claude doesn't have TTS capability
-  const mp3 = await openai.audio.speech.create({
+  // TTS uses direct OpenAI API (not Replit AI Integrations which doesn't support audio)
+  // This requires the user's own OpenAI API key, or we fall back to browser TTS
+  const directOpenAI = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  
+  const mp3 = await directOpenAI.audio.speech.create({
     model: "tts-1",
     voice: "onyx", // Professional, authoritative male voice
     input: text,
@@ -126,7 +131,12 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
   });
 
   const textContent = response.content.find(block => block.type === 'text');
-  const result = JSON.parse(textContent?.text || "{}");
+  let jsonText = textContent?.text || "{}";
+  
+  // Claude sometimes wraps JSON in markdown code blocks, strip them
+  jsonText = jsonText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+  
+  const result = JSON.parse(jsonText);
   
   const feedback: SimulationFeedback = {
     totalScore: result.totalScore || 0,
