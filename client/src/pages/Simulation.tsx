@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useLocation } from "wouter";
 import { useSimulation, useChat, useScoreSimulation } from "@/hooks/use-simulations";
 import { MicrophoneButton } from "@/components/MicrophoneButton";
@@ -11,6 +11,94 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { motion, AnimatePresence } from "framer-motion";
 import 'regenerator-runtime/runtime';
 
+// Custom hook for Deepgram fallback
+function useDeepgramSpeech() {
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const wsRef = useRef<WebSocket | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const startListening = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${protocol}//${window.location.host}/ws/deepgram`);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        console.log("Deepgram WebSocket connected");
+        setIsListening(true);
+        setTranscript("");
+
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'audio/webm;codecs=opus'
+        });
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+            ws.send(event.data);
+          }
+        };
+
+        mediaRecorder.start(250);
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "transcript" && data.text) {
+          if (data.isFinal) {
+            setTranscript(prev => (prev + " " + data.text).trim());
+          }
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("Deepgram WebSocket error:", err);
+      };
+
+      ws.onclose = () => {
+        console.log("Deepgram WebSocket closed");
+        setIsListening(false);
+      };
+
+    } catch (err) {
+      console.error("Failed to start Deepgram:", err);
+      setIsListening(false);
+    }
+  }, []);
+
+  const stopListening = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsListening(false);
+  }, []);
+
+  const resetTranscript = useCallback(() => {
+    setTranscript("");
+  }, []);
+
+  return {
+    transcript,
+    listening: isListening,
+    startListening,
+    stopListening,
+    resetTranscript
+  };
+}
+
 export default function Simulation() {
   const { id } = useParams();
   const simulationId = parseInt(id || "0");
@@ -21,13 +109,18 @@ export default function Simulation() {
   const scoreMutation = useScoreSimulation(simulationId);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  // Speech Recognition State
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+  // Browser Speech Recognition
+  const browserSpeech = useSpeechRecognition();
+  
+  // Deepgram fallback for unsupported browsers
+  const deepgramSpeech = useDeepgramSpeech();
+  
+  // Use browser speech if supported, otherwise use Deepgram
+  const useBrowserSpeech = browserSpeech.browserSupportsSpeechRecognition;
+  
+  const transcript = useBrowserSpeech ? browserSpeech.transcript : deepgramSpeech.transcript;
+  const listening = useBrowserSpeech ? browserSpeech.listening : deepgramSpeech.listening;
+  const resetTranscript = useBrowserSpeech ? browserSpeech.resetTranscript : deepgramSpeech.resetTranscript;
   
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -97,41 +190,36 @@ export default function Simulation() {
     }
   }, [data?.transcripts]);
 
-  if (!browserSupportsSpeechRecognition) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="p-8 bg-white rounded-xl shadow-xl text-center max-w-md">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Browser Not Supported</h2>
-          <p className="text-slate-600">Please use Google Chrome, Edge, or Safari for voice recognition features.</p>
-          <Button onClick={() => setLocation("/")} className="mt-4">Go Back</Button>
-        </div>
-      </div>
-    );
-  }
-
   const handleMicClick = () => {
-    console.log("Mic button clicked. Listening:", listening);
+    console.log("Mic button clicked. Listening:", listening, "Using browser speech:", useBrowserSpeech);
     if (listening) {
       // Stop listening and send
-      SpeechRecognition.stopListening();
+      if (useBrowserSpeech) {
+        SpeechRecognition.stopListening();
+      } else {
+        deepgramSpeech.stopListening();
+      }
       if (transcript.trim()) {
         handleSubmit(transcript);
       }
     } else {
       // Start listening
       resetTranscript();
-      // Ensure we have user interaction before starting
-      const start = async () => {
-        try {
-          await SpeechRecognition.startListening({ 
-            continuous: true,
-            language: 'en-US'
-          });
-        } catch (err) {
-          console.error("Failed to start listening:", err);
-        }
-      };
-      start();
+      if (useBrowserSpeech) {
+        const start = async () => {
+          try {
+            await SpeechRecognition.startListening({ 
+              continuous: true,
+              language: 'en-US'
+            });
+          } catch (err) {
+            console.error("Failed to start browser speech:", err);
+          }
+        };
+        start();
+      } else {
+        deepgramSpeech.startListening();
+      }
     }
   };
 

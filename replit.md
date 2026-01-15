@@ -81,7 +81,8 @@ Preferred communication style: Simple, everyday language.
 - **Drizzle Kit:** For database migrations (`npm run db:push`)
 
 ### Browser APIs
-- **SpeechRecognition API:** For voice input (best support in Chrome/Edge/Safari)
+- **SpeechRecognition API:** For voice input (Chrome/Edge/Safari)
+- **Deepgram Fallback:** Real-time speech-to-text for Firefox and other unsupported browsers
 - **SpeechSynthesis API:** For text-to-speech output of AI responses
 
 ### Key NPM Packages
