@@ -35,15 +35,9 @@ export async function registerRoutes(
     res.json(allSimulations);
   });
 
-  // Get All Simulations with Transcripts (for export)
+  // Get All Simulations with Transcripts (for export) - efficient bulk fetch
   app.get("/api/simulations/export", async (req, res) => {
-    const allSimulations = await storage.getAllSimulations();
-    const exportData = await Promise.all(
-      allSimulations.map(async (sim) => {
-        const transcripts = await storage.getTranscripts(sim.id);
-        return { ...sim, transcripts };
-      })
-    );
+    const exportData = await storage.getAllSimulationsWithTranscripts();
     res.json(exportData);
   });
 

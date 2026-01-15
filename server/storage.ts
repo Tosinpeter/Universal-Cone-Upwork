@@ -14,6 +14,7 @@ export interface IStorage {
   createSimulation(simulation: InsertSimulation): Promise<Simulation>;
   getSimulation(id: number): Promise<Simulation | undefined>;
   getAllSimulations(): Promise<Simulation[]>;
+  getAllSimulationsWithTranscripts(): Promise<(Simulation & { transcripts: Transcript[] })[]>;
   addTranscript(transcript: InsertTranscript): Promise<Transcript>;
   getTranscripts(simulationId: number): Promise<Transcript[]>;
   updateSimulationScore(id: number, score: number, feedback: SimulationFeedback): Promise<Simulation>;
@@ -32,6 +33,25 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSimulations(): Promise<Simulation[]> {
     return await db.select().from(simulations).orderBy(desc(simulations.createdAt));
+  }
+
+  async getAllSimulationsWithTranscripts(): Promise<(Simulation & { transcripts: Transcript[] })[]> {
+    // Fetch all in two efficient queries instead of N+1
+    const allSims = await db.select().from(simulations).orderBy(desc(simulations.createdAt));
+    const allTranscripts = await db.select().from(transcripts).orderBy(asc(transcripts.timestamp));
+    
+    // Group transcripts by simulationId
+    const transcriptsBySimId = new Map<number, Transcript[]>();
+    for (const t of allTranscripts) {
+      const existing = transcriptsBySimId.get(t.simulationId) || [];
+      existing.push(t);
+      transcriptsBySimId.set(t.simulationId, existing);
+    }
+    
+    return allSims.map(sim => ({
+      ...sim,
+      transcripts: transcriptsBySimId.get(sim.id) || []
+    }));
   }
 
   async addTranscript(transcript: InsertTranscript): Promise<Transcript> {

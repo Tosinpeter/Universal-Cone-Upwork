@@ -32,16 +32,18 @@ async function getCredentials() {
 }
 
 export async function getUncachableResendClient() {
-  const credentials = await getCredentials();
+  const { apiKey, fromEmail } = await getCredentials();
   return {
-    client: new Resend(credentials.apiKey),
-    fromEmail: credentials.fromEmail
+    client: new Resend(apiKey),
+    fromEmail: fromEmail
   };
 }
 
 export async function sendSimulationReport(email: string, report: { name: string, score: number, feedback: any, transcript: any[] }) {
   try {
+    console.log('Sending email report to:', email);
     const { client, fromEmail } = await getUncachableResendClient();
+    console.log('Resend client obtained, sending from:', fromEmail);
     
     const transcriptHtml = report.transcript.map(t => `
       <p><strong>${t.role === 'user' ? 'Rep' : 'Dr. Hayes'}:</strong> ${t.content}</p>
@@ -56,7 +58,7 @@ export async function sendSimulationReport(email: string, report: { name: string
       ${report.feedback.incorrectClaims?.length ? `<h4>Accuracy Alerts:</h4><ul>${report.feedback.incorrectClaims.map((c: string) => `<li>${c}</li>`).join('')}</ul>` : ''}
     `;
 
-    await client.emails.send({
+    const result = await client.emails.send({
       from: fromEmail || 'onboarding@resend.dev',
       to: email,
       subject: `Simulation Report: ${report.name} (${report.score}%)`,
@@ -71,7 +73,9 @@ export async function sendSimulationReport(email: string, report: { name: string
         ${transcriptHtml}
       `
     });
+    console.log('Email sent successfully:', result);
   } catch (error) {
     console.error('Failed to send email:', error);
+    throw error; // Re-throw to see the full error in logs
   }
 }
