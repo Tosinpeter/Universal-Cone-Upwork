@@ -41,7 +41,14 @@ export default function Simulation() {
   // Handle TTS
   const speak = (text: string) => {
     if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech and stop recognition to prevent echo/loop
       window.speechSynthesis.cancel();
+      try {
+        SpeechRecognition.stopListening();
+      } catch (e) {
+        console.error("Failed to stop listening during TTS:", e);
+      }
+      
       const utterance = new SpeechSynthesisUtterance(text);
       // Try to find a good English voice
       const voices = window.speechSynthesis.getVoices();
@@ -90,6 +97,7 @@ export default function Simulation() {
   }
 
   const handleMicClick = () => {
+    console.log("Mic button clicked. Listening:", listening);
     if (listening) {
       // Stop listening and send
       SpeechRecognition.stopListening();
@@ -99,7 +107,18 @@ export default function Simulation() {
     } else {
       // Start listening
       resetTranscript();
-      SpeechRecognition.startListening({ continuous: true });
+      // Ensure we have user interaction before starting
+      const start = async () => {
+        try {
+          await SpeechRecognition.startListening({ 
+            continuous: true,
+            language: 'en-US'
+          });
+        } catch (err) {
+          console.error("Failed to start listening:", err);
+        }
+      };
+      start();
     }
   };
 
