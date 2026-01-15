@@ -45,13 +45,23 @@ export default function Simulation() {
       const utterance = new SpeechSynthesisUtterance(text);
       // Try to find a good English voice
       const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+      // Look for a male voice or fallback to preferred English voices
+      const maleVoice = voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex"));
+      const preferredVoice = maleVoice || voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+      
       if (preferredVoice) utterance.voice = preferredVoice;
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+      utterance.rate = 0.95; // Slightly slower for professional tone
+      utterance.pitch = 0.9; // Lower pitch for male persona
+      
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
       window.speechSynthesis.speak(utterance);
     }
   };
+
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Speak new assistant messages
   useEffect(() => {
@@ -164,7 +174,7 @@ export default function Simulation() {
               </span>
             </div>
 
-            {data.transcripts.map((msg) => (
+            {data.transcripts.map((msg, idx) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -172,10 +182,22 @@ export default function Simulation() {
                 className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 <div className={`
-                  h-10 w-10 shrink-0 rounded-full flex items-center justify-center shadow-sm
+                  h-10 w-10 shrink-0 rounded-full flex items-center justify-center shadow-sm relative
                   ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-white text-emerald-600 border border-slate-200'}
                 `}>
                   {msg.role === 'user' ? <User size={20} /> : <Stethoscope size={20} />}
+                  {msg.role === 'assistant' && isSpeaking && idx === data.transcripts.length - 1 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 flex items-center justify-center">
+                        <div className="flex gap-0.5 items-end h-2">
+                           <div className="w-0.5 bg-white animate-[bounce_1s_infinite] h-1"></div>
+                           <div className="w-0.5 bg-white animate-[bounce_1s_infinite_0.1s] h-2"></div>
+                           <div className="w-0.5 bg-white animate-[bounce_1s_infinite_0.2s] h-1.5"></div>
+                        </div>
+                      </span>
+                    </span>
+                  )}
                 </div>
                 
                 <div className={`
