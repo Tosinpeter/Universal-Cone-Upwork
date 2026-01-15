@@ -69,6 +69,7 @@ export default function Results() {
           sections={feedback.sections}
           strengths={feedback.strengths}
           improvements={feedback.improvements}
+          incorrectClaims={feedback.incorrectClaims}
         />
 
         {/* Transcript Review Accordion (Optional expansion) */}

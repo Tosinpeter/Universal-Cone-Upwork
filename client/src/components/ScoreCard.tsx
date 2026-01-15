@@ -16,9 +16,10 @@ interface ScoreCardProps {
   sections: FeedbackSection[];
   strengths: string[];
   improvements: string[];
+  incorrectClaims?: string[];
 }
 
-export function ScoreCard({ totalScore, sections, strengths, improvements }: ScoreCardProps) {
+export function ScoreCard({ totalScore, sections, strengths, improvements, incorrectClaims }: ScoreCardProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-emerald-500";
     if (score >= 60) return "text-amber-500";
@@ -148,6 +149,29 @@ export function ScoreCard({ totalScore, sections, strengths, improvements }: Sco
           </ul>
         </div>
       </motion.div>
+
+      {incorrectClaims && incorrectClaims.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-3"
+        >
+          <div className="bg-red-50 rounded-2xl p-8 border border-red-100">
+            <h4 className="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
+              <span className="bg-red-200 p-1 rounded">⚠️</span> Accuracy Alerts
+            </h4>
+            <ul className="space-y-3">
+              {incorrectClaims.map((item, i) => (
+                <li key={i} className="flex items-start gap-3 text-red-900">
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-500 mt-2 shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
