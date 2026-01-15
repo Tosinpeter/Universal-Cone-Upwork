@@ -15,10 +15,13 @@ const openai = new OpenAI({
 });
 
 // Anthropic client - used for conversation and scoring
-// Uses claude-3-5-haiku for faster responses
+// Uses claude-sonnet-4-20250514 (latest model)
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
+
+// Latest Anthropic model - do not change to older 3.x models
+const DEFAULT_MODEL = "claude-sonnet-4-20250514";
 
 const SYSTEM_PROMPT = `
 You are Dr. Hayes, a fellowship-trained orthopedic surgeon doing 20-25 revision TKAs per year.
@@ -65,7 +68,7 @@ export async function generateAiResponse(history: Transcript[]): Promise<string>
   }
 
   const response = await anthropic.messages.create({
-    model: "claude-3-5-haiku-20241022",
+    model: DEFAULT_MODEL,
     max_tokens: 1024,
     system: SYSTEM_PROMPT,
     messages: messages,
@@ -123,7 +126,7 @@ export async function generateScore(history: Transcript[]): Promise<{ score: num
   `;
 
   const response = await anthropic.messages.create({
-    model: "claude-3-5-haiku-20241022",
+    model: DEFAULT_MODEL,
     max_tokens: 4096,
     system: "You are an expert sales coach for orthopedic devices. Evaluate strictly against the provided Truth Set. Return ONLY valid JSON, no other text.",
     messages: [
