@@ -39,36 +39,49 @@ export default function Simulation() {
   }, [data?.transcripts, listening, transcript]);
 
   // Handle TTS
-  const speak = (text: string) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech and stop recognition to prevent echo/loop
-      window.speechSynthesis.cancel();
-      try {
-        SpeechRecognition.stopListening();
-      } catch (e) {
-        console.error("Failed to stop listening during TTS:", e);
+  const speak = async (text: string) => {
+    try {
+      // Cancel any ongoing web speech
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
       }
       
-      const utterance = new SpeechSynthesisUtterance(text);
-      // Try to find a good English voice
-      const voices = window.speechSynthesis.getVoices();
-      // Look for a US male voice or fallback to preferred English voices
-      const maleVoice = voices.find(v => 
-        (v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex")) && 
-        (v.lang.includes("en-US") || v.lang.includes("en_US"))
-      ) || voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex"));
+      SpeechRecognition.stopListening();
+      setIsSpeaking(true);
+
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) throw new Error("TTS request failed");
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
       
-      const preferredVoice = maleVoice || voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
-      
-      if (preferredVoice) utterance.voice = preferredVoice;
-      utterance.rate = 0.95; // Slightly slower for professional tone
-      utterance.pitch = 0.9; // Lower pitch for male persona
-      
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      
-      window.speechSynthesis.speak(utterance);
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.error("OpenAI TTS Error:", err);
+      setIsSpeaking(false);
+      // Fallback to browser TTS if OpenAI fails
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      }
     }
   };
 

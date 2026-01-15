@@ -3,13 +3,31 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { generateAiResponse, generateScore } from "./openai";
+import { generateAiResponse, generateScore, generateTts } from "./openai";
 import { sendSimulationReport } from "./resend";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // TTS endpoint
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text) {
+        return res.status(400).json({ message: "Text is required" });
+      }
+      const audioBuffer = await generateTts(text);
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Content-Length": audioBuffer.length,
+      });
+      res.send(audioBuffer);
+    } catch (err) {
+      console.error("TTS Error:", err);
+      res.status(500).json({ message: "Failed to generate speech" });
+    }
+  });
   
   // Create Simulation
   app.post(api.simulations.create.path, async (req, res) => {

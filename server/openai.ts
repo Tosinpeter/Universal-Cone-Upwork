@@ -57,6 +57,16 @@ export async function generateAiResponse(history: Transcript[]): Promise<string>
   return response.choices[0].message.content || "I didn't catch that. Could you repeat?";
 }
 
+export async function generateTts(text: string): Promise<Buffer> {
+  const mp3 = await openai.audio.speech.create({
+    model: "tts-1",
+    voice: "onyx", // Professional, authoritative male voice
+    input: text,
+  });
+
+  return Buffer.from(await mp3.arrayBuffer());
+}
+
 export async function generateScore(history: Transcript[]): Promise<{ score: number, feedback: SimulationFeedback }> {
   const transcriptText = history.map(t => `${t.role.toUpperCase()}: ${t.content}`).join("\n");
 
