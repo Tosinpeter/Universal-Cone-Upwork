@@ -45,8 +45,12 @@ export default function Simulation() {
       const utterance = new SpeechSynthesisUtterance(text);
       // Try to find a good English voice
       const voices = window.speechSynthesis.getVoices();
-      // Look for a male voice or fallback to preferred English voices
-      const maleVoice = voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex"));
+      // Look for a US male voice or fallback to preferred English voices
+      const maleVoice = voices.find(v => 
+        (v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex")) && 
+        (v.lang.includes("en-US") || v.lang.includes("en_US"))
+      ) || voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Microsoft David") || v.name.includes("Alex"));
+      
       const preferredVoice = maleVoice || voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
       
       if (preferredVoice) utterance.voice = preferredVoice;

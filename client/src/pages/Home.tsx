@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useCreateSimulation } from "@/hooks/use-simulations";
 import { motion } from "framer-motion";
-import { Stethoscope, ArrowRight, Activity, Award } from "lucide-react";
+import { ArrowRight, Activity, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import tjoLogo from "@assets/TJO_Logo_1768447571999.png";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -24,12 +25,7 @@ export default function Home() {
       {/* Navbar */}
       <header className="relative z-10 w-full px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <div className="bg-primary p-2 rounded-lg text-white">
-            <Stethoscope size={24} />
-          </div>
-          <span className="font-display font-bold text-xl tracking-tight text-slate-900">
-            MedSim<span className="text-primary">.ai</span>
-          </span>
+          <img src={tjoLogo} alt="TJO Logo" className="h-12 w-auto object-contain" />
         </div>
       </header>
 
