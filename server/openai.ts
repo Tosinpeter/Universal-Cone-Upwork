@@ -86,6 +86,7 @@ export async function generateTts(text: string): Promise<Buffer> {
     model: "tts-1",
     voice: "onyx", // Professional, authoritative male voice
     input: text,
+    speed: 1.2, // 20% faster for more natural conversation pace
   });
 
   return Buffer.from(await mp3.arrayBuffer());
