@@ -17,6 +17,8 @@ export function setupDeepgramWebSocket(httpServer: Server) {
 
     const deepgram = createClient(apiKey);
     
+    // Deepgram configuration that auto-detects audio format
+    // This allows it to handle various formats from different devices (webm, mp4, wav, etc.)
     const connection = deepgram.listen.live({
       model: "nova-2",
       language: "en-US",
@@ -24,6 +26,7 @@ export function setupDeepgramWebSocket(httpServer: Server) {
       interim_results: true,
       utterance_end_ms: 1000,
       vad_events: true,
+      // No encoding specified - Deepgram will auto-detect from the audio stream
     });
 
     connection.on(LiveTranscriptionEvents.Open, () => {

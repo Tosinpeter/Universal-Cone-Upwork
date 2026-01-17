@@ -10,10 +10,18 @@ import { ArrowLeft, User, Stethoscope } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { motion, AnimatePresence } from "framer-motion";
 import { playTextToSpeech, stopCurrentAudio } from "@/lib/audioUtils";
+import { 
+  getSupportedAudioMimeType, 
+  getOptimizedAudioConstraints,
+  requestMicrophonePermission,
+  logAudioDebugInfo,
+  isIOS
+} from "@/lib/audioCompat";
+import { useToast } from "@/hooks/use-toast";
 import 'regenerator-runtime/runtime';
 
 // Custom hook for Deepgram fallback
-function useDeepgramSpeech() {
+function useDeepgramSpeech(onError?: (error: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
@@ -22,7 +30,22 @@ function useDeepgramSpeech() {
 
   const startListening = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Log debug info on first use (helpful for troubleshooting)
+      if (isIOS()) {
+        await logAudioDebugInfo();
+      }
+
+      // Request microphone permission with better error handling
+      const permissionResult = await requestMicrophonePermission();
+      if (!permissionResult.granted) {
+        const error = permissionResult.error || "Microphone access denied";
+        console.error(error);
+        if (onError) onError(error);
+        setIsListening(false);
+        return;
+      }
+
+      const stream = permissionResult.stream!;
       streamRef.current = stream;
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -34,15 +57,26 @@ function useDeepgramSpeech() {
         setIsListening(true);
         setTranscript("");
 
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: 'audio/webm;codecs=opus'
-        });
+        // Get supported MIME type for this device
+        const mimeType = getSupportedAudioMimeType();
+        
+        // Create MediaRecorder with supported type
+        const options = mimeType ? { mimeType } : undefined;
+        const mediaRecorder = new MediaRecorder(stream, options);
         mediaRecorderRef.current = mediaRecorder;
+
+        console.log(`MediaRecorder created with MIME type: ${mediaRecorder.mimeType}`);
 
         mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
             ws.send(event.data);
           }
+        };
+
+        mediaRecorder.onerror = (event) => {
+          console.error("MediaRecorder error:", event);
+          const error = "Recording error occurred";
+          if (onError) onError(error);
         };
 
         mediaRecorder.start(250);
@@ -59,6 +93,8 @@ function useDeepgramSpeech() {
 
       ws.onerror = (err) => {
         console.error("Deepgram WebSocket error:", err);
+        const error = "Connection error. Please try again.";
+        if (onError) onError(error);
       };
 
       ws.onclose = () => {
@@ -68,9 +104,11 @@ function useDeepgramSpeech() {
 
     } catch (err) {
       console.error("Failed to start Deepgram:", err);
+      const error = err instanceof Error ? err.message : "Failed to start speech recognition";
+      if (onError) onError(error);
       setIsListening(false);
     }
-  }, []);
+  }, [onError]);
 
   const stopListening = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -104,26 +142,43 @@ export default function Simulation() {
   const { id } = useParams();
   const simulationId = parseInt(id || "0");
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   const { data, isLoading } = useSimulation(simulationId);
   const chatMutation = useChat(simulationId);
   const scoreMutation = useScoreSimulation(simulationId);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Error handler for speech recognition
+  const handleSpeechError = useCallback((error: string) => {
+    toast({
+      title: "Microphone Error",
+      description: error,
+      variant: "destructive",
+    });
+  }, [toast]);
+
   // Browser Speech Recognition
   const browserSpeech = useSpeechRecognition();
 
-  // Deepgram fallback for unsupported browsers
-  const deepgramSpeech = useDeepgramSpeech();
+  // Deepgram fallback for unsupported browsers or iOS devices
+  const deepgramSpeech = useDeepgramSpeech(handleSpeechError);
 
   // Use browser speech if supported, otherwise use Deepgram
-  const useBrowserSpeech = browserSpeech.browserSupportsSpeechRecognition;
+  // iOS devices should use Deepgram as Web Speech API is unreliable on iOS
+  const useBrowserSpeech = browserSpeech.browserSupportsSpeechRecognition && !isIOS();
 
   const transcript = useBrowserSpeech ? browserSpeech.transcript : deepgramSpeech.transcript;
   const listening = useBrowserSpeech ? browserSpeech.listening : deepgramSpeech.listening;
   const resetTranscript = useBrowserSpeech ? browserSpeech.resetTranscript : deepgramSpeech.resetTranscript;
 
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Log which speech recognition method is being used
+  useEffect(() => {
+    console.log(`Speech recognition method: ${useBrowserSpeech ? 'Browser Web Speech API' : 'Deepgram WebSocket'}`);
+    console.log(`iOS device: ${isIOS()}`);
+  }, [useBrowserSpeech]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
