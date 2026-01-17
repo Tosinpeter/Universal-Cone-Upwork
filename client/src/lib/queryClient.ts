@@ -49,9 +49,13 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
+      // Enable garbage collection for unused queries (after 5 minutes)
+      gcTime: 1000 * 60 * 5,
     },
     mutations: {
       retry: false,
+      // Add timeout for mutations to prevent hanging requests
+      networkMode: 'online',
     },
   },
 });

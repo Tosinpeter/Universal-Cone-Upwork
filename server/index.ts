@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { setupDeepgramWebSocket } from "./deepgram";
+import compression from "compression";
 
 const app = express();
 const httpServer = createServer(app);
@@ -12,6 +13,17 @@ declare module "http" {
     rawBody: unknown;
   }
 }
+
+// Enable gzip compression for all responses
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6, // Default compression level (good balance)
+}));
 
 app.use(
   express.json({

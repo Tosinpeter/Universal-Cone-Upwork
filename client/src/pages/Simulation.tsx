@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useSimulation, useChat, useScoreSimulation } from "@/hooks/use-simulations";
 import { MicrophoneButton } from "@/components/MicrophoneButton";
@@ -9,9 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, User, Stethoscope } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { motion, AnimatePresence } from "framer-motion";
-import { playTextToSpeech, stopCurrentAudio } from "@/lib/audioUtils";
-import { 
-  getSupportedAudioMimeType, 
+import { playTextToSpeech, stopCurrentAudio, preloadAudio } from "@/lib/audioUtils";
+import {
+  getSupportedAudioMimeType,
   getOptimizedAudioConstraints,
   requestMicrophonePermission,
   logAudioDebugInfo,
@@ -19,6 +19,23 @@ import {
 } from "@/lib/audioCompat";
 import { useToast } from "@/hooks/use-toast";
 import 'regenerator-runtime/runtime';
+
+// Debounce utility
+function useDebounce<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+): T {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  return useCallback((...args: Parameters<T>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  }, [callback, delay]) as T;
+}
 
 // Custom hook for Deepgram fallback
 function useDeepgramSpeech(onError?: (error: string) => void) {
@@ -59,7 +76,7 @@ function useDeepgramSpeech(onError?: (error: string) => void) {
 
         // Get supported MIME type for this device
         const mimeType = getSupportedAudioMimeType();
-        
+
         // Create MediaRecorder with supported type
         const options = mimeType ? { mimeType } : undefined;
         const mediaRecorder = new MediaRecorder(stream, options);
@@ -204,12 +221,23 @@ export default function Simulation() {
     );
   }, []);
 
-  // Speak new assistant messages
+  // Speak new assistant messages and preload next expected response
   useEffect(() => {
     if (data?.transcripts && data.transcripts.length > 0) {
       const lastMsg = data.transcripts[data.transcripts.length - 1];
       if (lastMsg.role === 'assistant') {
         speak(lastMsg.content);
+
+        // Preload common responses for faster playback (optional optimization)
+        // This could be expanded based on conversation flow analysis
+        if (data.transcripts.length < 3) {
+          const commonResponses = [
+            "Could you tell me more about that?",
+            "What makes that different from competitors?",
+            "How does that work in practice?"
+          ];
+          commonResponses.forEach(text => preloadAudio(text).catch(() => { }));
+        }
       }
     }
   }, [data?.transcripts, speak]);
@@ -231,7 +259,7 @@ export default function Simulation() {
         deepgramSpeech.stopListening();
       }
       if (transcript.trim()) {
-        handleSubmit(transcript);
+        debouncedSubmit(transcript);
       }
     } else {
       // Start listening
@@ -255,6 +283,7 @@ export default function Simulation() {
   }, [listening, useBrowserSpeech, deepgramSpeech, transcript, resetTranscript]);
 
   const handleSubmit = useCallback((text: string) => {
+    if (!text.trim() || isProcessing) return; // Prevent duplicate submissions
     setIsProcessing(true);
     chatMutation.mutate(text, {
       onSettled: () => {
@@ -262,7 +291,10 @@ export default function Simulation() {
         resetTranscript();
       }
     });
-  }, [chatMutation, resetTranscript]);
+  }, [chatMutation, resetTranscript, isProcessing]);
+
+  // Debounced submit to prevent rapid submissions
+  const debouncedSubmit = useDebounce(handleSubmit, 300);
 
   const handleEndSimulation = useCallback(() => {
     if (confirm("Are you sure you want to end the simulation and get your score?")) {

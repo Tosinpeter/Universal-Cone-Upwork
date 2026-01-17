@@ -50,6 +50,7 @@ export async function generateTts(
   }
 
   try {
+    const startTime = Date.now();
     console.log("Generating TTS with ElevenLabs...");
     
     // Generate audio using ElevenLabs with optimized settings
@@ -62,7 +63,8 @@ export async function generateTts(
         style: 0.0, // Neutral style for professional speech
         useSpeakerBoost: true, // Enhanced clarity
       },
-      optimizeStreamingLatency: 3, // Optimize for lower latency
+      optimizeStreamingLatency: 4, // Maximum optimization for lowest latency
+      outputFormat: "mp3_44100_128", // Optimized quality/size ratio
     });
 
     // Convert stream to buffer
@@ -86,7 +88,8 @@ export async function generateTts(
     // Cache the result
     addToCache(cacheKey, audioBuffer);
     
-    console.log(`TTS generated successfully: ${audioBuffer.length} bytes`);
+    const duration = Date.now() - startTime;
+    console.log(`TTS generated successfully: ${audioBuffer.length} bytes in ${duration}ms`);
     return audioBuffer;
     
   } catch (error) {

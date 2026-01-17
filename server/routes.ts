@@ -10,18 +10,24 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // TTS endpoint
+  // TTS endpoint with caching and optimization
   app.post("/api/tts", async (req, res) => {
     try {
       const { text } = req.body;
       if (!text) {
         return res.status(400).json({ message: "Text is required" });
       }
+      
       const audioBuffer = await generateTts(text);
+      
+      // Set cache headers for audio (cache for 1 hour)
       res.set({
         "Content-Type": "audio/mpeg",
         "Content-Length": audioBuffer.length,
+        "Cache-Control": "public, max-age=3600, immutable",
+        "ETag": `"${Buffer.from(text.substring(0, 50)).toString('base64')}"`,
       });
+      
       res.send(audioBuffer);
     } catch (err) {
       console.error("TTS Error:", err);
