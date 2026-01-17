@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { type FeedbackSection } from "@shared/schema";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import { memo } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Cell
 } from 'recharts';
@@ -19,7 +20,7 @@ interface ScoreCardProps {
   incorrectClaims?: string[];
 }
 
-export function ScoreCard({ totalScore, sections, strengths, improvements, incorrectClaims }: ScoreCardProps) {
+export const ScoreCard = memo(function ScoreCard({ totalScore, sections, strengths, improvements, incorrectClaims }: ScoreCardProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-emerald-500";
     if (score >= 60) return "text-amber-500";
@@ -35,7 +36,7 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl mx-auto">
       {/* Total Score & Chart */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="lg:col-span-1 bg-white rounded-2xl p-8 shadow-xl border border-slate-100 flex flex-col items-center justify-center text-center"
@@ -73,14 +74,14 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
           </div>
         </div>
         <p className="text-slate-600 px-4">
-          {totalScore >= 80 ? "Excellent work! You're ready for the field." : 
-           totalScore >= 60 ? "Good effort, but there are areas to refine." : 
-           "Needs improvement. Review the feedback and try again."}
+          {totalScore >= 80 ? "Excellent work! You're ready for the field." :
+            totalScore >= 60 ? "Good effort, but there are areas to refine." :
+              "Needs improvement. Review the feedback and try again."}
         </p>
       </motion.div>
 
       {/* Breakdown Chart */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -92,15 +93,15 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
             <BarChart data={sections} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
               <XAxis type="number" domain={[0, 20]} hide />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                width={120} 
-                tick={{ fill: '#64748b', fontSize: 12 }} 
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={120}
+                tick={{ fill: '#64748b', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip 
+              <Tooltip
                 cursor={{ fill: 'transparent' }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
               />
@@ -115,7 +116,7 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
       </motion.div>
 
       {/* Strengths */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -151,7 +152,7 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
       </motion.div>
 
       {incorrectClaims && incorrectClaims.length > 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -174,4 +175,4 @@ export function ScoreCard({ totalScore, sections, strengths, improvements, incor
       )}
     </div>
   );
-}
+});

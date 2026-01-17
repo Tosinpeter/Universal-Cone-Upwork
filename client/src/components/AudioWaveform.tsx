@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
+import { memo } from "react";
 
-export function AudioWaveform({ active }: { active: boolean }) {
+export const AudioWaveform = memo(function AudioWaveform({ active }: { active: boolean }) {
   const bars = [1, 2, 3, 4, 5, 4, 3, 2, 1];
-  
+
   return (
     <div className="flex items-center gap-1 h-8">
       {bars.map((_, i) => (
@@ -23,4 +24,4 @@ export function AudioWaveform({ active }: { active: boolean }) {
       ))}
     </div>
   );
-}
+});

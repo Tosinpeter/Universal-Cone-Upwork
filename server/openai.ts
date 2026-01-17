@@ -78,22 +78,9 @@ export async function generateAiResponse(history: Transcript[]): Promise<string>
   return textContent?.text || "I didn't catch that. Could you repeat?";
 }
 
-export async function generateTts(text: string): Promise<Buffer> {
-  // TTS uses direct OpenAI API (not Replit AI Integrations which doesn't support audio)
-  // This requires the user's own OpenAI API key, or we fall back to browser TTS
-  const directOpenAI = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  
-  const mp3 = await directOpenAI.audio.speech.create({
-    model: "tts-1",
-    voice: "onyx", // Professional, authoritative male voice
-    input: text,
-    speed: 1.2, // 20% faster for more natural conversation pace
-  });
-
-  return Buffer.from(await mp3.arrayBuffer());
-}
+// TTS is now handled by ElevenLabs in elevenlabs.ts
+// This export is kept for backward compatibility
+export { generateTts } from "./elevenlabs";
 
 export async function generateScore(history: Transcript[]): Promise<{ score: number, feedback: SimulationFeedback }> {
   const transcriptText = history.map(t => `${t.role.toUpperCase()}: ${t.content}`).join("\n");

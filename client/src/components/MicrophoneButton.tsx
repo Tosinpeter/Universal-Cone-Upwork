@@ -1,6 +1,7 @@
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface MicrophoneButtonProps {
   isListening: boolean;
@@ -9,11 +10,11 @@ interface MicrophoneButtonProps {
   disabled?: boolean;
 }
 
-export function MicrophoneButton({ 
-  isListening, 
-  isProcessing, 
-  onClick, 
-  disabled 
+export const MicrophoneButton = memo(function MicrophoneButton({
+  isListening,
+  isProcessing,
+  onClick,
+  disabled
 }: MicrophoneButtonProps) {
   return (
     <div className="relative flex items-center justify-center">
@@ -44,8 +45,8 @@ export function MicrophoneButton({
         disabled={disabled || isProcessing}
         className={cn(
           "relative z-10 flex h-20 w-20 items-center justify-center rounded-full shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-offset-2",
-          isListening 
-            ? "bg-red-500 hover:bg-red-600 text-white focus:ring-red-200" 
+          isListening
+            ? "bg-red-500 hover:bg-red-600 text-white focus:ring-red-200"
             : "bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary/20",
           (disabled || isProcessing) && "opacity-50 cursor-not-allowed bg-slate-300 text-slate-500 hover:bg-slate-300"
         )}
@@ -69,4 +70,4 @@ export function MicrophoneButton({
       </div>
     </div>
   );
-}
+});
